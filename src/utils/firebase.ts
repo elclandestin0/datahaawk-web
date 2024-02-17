@@ -5,7 +5,7 @@ import {getAuth, GoogleAuthProvider} from 'firebase/auth';
 
 
 const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
+    apiKey: "AIzaSyBUl3y-fUMObL2feVJlAxbfnyGHkssMoD8",
     authDomain: "datahawk-32021.firebaseapp.com",
     projectId: "datahawk-32021",
     storageBucket: "datahawk-32021.appspot.com",
