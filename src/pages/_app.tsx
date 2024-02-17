@@ -1,13 +1,10 @@
-// src/pages/_app.tsx
-import { ChakraProvider } from '@chakra-ui/react';
-import Layout from '../app/layout'; // Adjust the import path as necessary
+import {ChakraProvider} from '@chakra-ui/react';
+import '@/app/globals.css';
 
-function MyApp({ Component, pageProps }) {
+function MyApp({Component, pageProps}) {
     return (
         <ChakraProvider>
-            <Layout>
-                <Component {...pageProps} />
-            </Layout>
+            <Component {...pageProps} />
         </ChakraProvider>
     );
 }
