@@ -6,7 +6,8 @@ import {useRouter} from "next/router";
 import styles from '@/pages/page.module.css';
 import {useMetaMask} from "@/contexts/MetaMaskContext";
 import MetaMaskConnect from "@/components/MetaMaskConnect";
-import ThreeCube from '@/components/Cube'; // Adjust the path as necessary
+import ThreeCube from '@/components/Cube';
+import GoogleSignIn from "@/components/GoogleSignIn"; // Adjust the path as necessary
 
 const Home: React.FC = () => {
     const router = useRouter();
@@ -45,15 +46,11 @@ const Home: React.FC = () => {
                 </Text>
                 {/* Placeholder for 3D Cube */}
                 <Box id="cube-container" w="300px" h="300px" my={8}>
-                    <ThreeCube />
+                    <ThreeCube/>
                 </Box>
                 <VStack spacing={4}>
-                    <Button colorScheme="teal" onClick={() => console.log('Login with Google')}>
-                        Log-in with Google
-                    </Button>
-                    <Button colorScheme="orange" onClick={() => console.log('Connect with Metamask')}>
-                        Connect with Metamask
-                    </Button>
+                    <GoogleSignIn/>
+                    <MetaMaskConnect/>
                 </VStack>
             </Center>
         </Box>
