@@ -30,7 +30,7 @@ const Home: React.FC = () => {
                     DATAHAWK
                 </Text>
                 {/* Placeholder for 3D Cube */}
-                <Box id="cube-container" w="300px" h="300px" my={8}>
+                <Box id="cube-container" w="300px" h="300px" my={8}>        
                     <ThreeCube/>
                 </Box>
                 <VStack spacing={4}>

@@ -2,7 +2,8 @@
 import {Box, Button, Center, Text, Image, Flex} from '@chakra-ui/react';
 import React, {useEffect} from 'react';
 import {useRouter} from 'next/router';
-import {useGoogleAuth} from '@/contexts/GoogleAuthContext'; // Adjust the import path as necessary
+import {useGoogleAuth} from '@/contexts/GoogleAuthContext';
+import UnityWebGL from "@/components/UnityGame"; // Adjust the import path as necessary
 
 const Main: React.FC = () => {
     const {user} = useGoogleAuth();
@@ -29,7 +30,7 @@ const Main: React.FC = () => {
             <Center flexDirection="column" h="full">
                 {/* Placeholder for WebGL/Unity component */}
                 <Box id="unity-container" w="600px" h="400px" my={8}>
-                    {/* Unity WebGL Component will go here */}
+                    <UnityWebGL/>
                 </Box>
                 <Button isDisabled={true} colorScheme="purple" size="lg">
                     Rootin-Shootin-Spaceboy
