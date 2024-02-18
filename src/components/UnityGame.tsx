@@ -3,11 +3,11 @@ import React, {useEffect} from 'react';
 const UnityWebGL: React.FC = () => {
     useEffect(() => {
         const buildUrl = "/Build";
-        const loaderUrl = buildUrl + "/Builds.loader.js";
+        const loaderUrl = buildUrl + "/webgl.loader.js"; // Updated to the correct file name
         const config = {
-            dataUrl: buildUrl + "/Builds.data",
-            frameworkUrl: buildUrl + "/Builds.framework.js",
-            codeUrl: buildUrl + "/Builds.wasm",
+            dataUrl: buildUrl + "/webgl.data/webgl.data", // Updated to the correct file name and extension
+            frameworkUrl: buildUrl + "/webgl.framework.js/build.framework.js", // Updated to the correct file name and extension
+            codeUrl: buildUrl + "/webgl.wasm/build.wasm", // Updated to the correct file name and extension
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "My project",
