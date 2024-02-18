@@ -1,13 +1,14 @@
 // src/components/GoogleSignIn.tsx
-import { Button } from '@chakra-ui/react';
-import { signIn } from '@/hooks/google'; // Adjust the import path as necessary
+import {Button} from '@chakra-ui/react';
+import {signIn} from '@/hooks/google'; // Adjust the import path as necessary
+import {useRouter} from 'next/router';
 
 const GoogleSignIn: React.FC = () => {
-    // This function wraps the signIn call to handle any UI changes pre and post sign-in
+    const router = useRouter();
     const handleSignIn = async () => {
         try {
             await signIn();
-            // Optional: Update UI state or redirect the user upon successful sign-in
+            router.push('/main');
         } catch (error) {
             // Handle sign-in errors here, such as showing an error message
             console.error('Error signing in:', error);

@@ -7,36 +7,21 @@ import styles from '@/pages/page.module.css';
 import {useMetaMask} from "@/contexts/MetaMaskContext";
 import MetaMaskConnect from "@/components/MetaMaskConnect";
 import ThreeCube from '@/components/Cube';
-import GoogleSignIn from "@/components/GoogleSignIn"; // Adjust the path as necessary
+import GoogleSignIn from "@/components/GoogleSignIn";
+import {useGoogleAuth} from "@/contexts/GoogleAuthContext"; // Adjust the path as necessary
 
 const Home: React.FC = () => {
     const router = useRouter();
     const {isConnected, account} = useMetaMask();
+    const {user} = useGoogleAuth();
 
     useEffect(() => {
         console.log(isConnected);
         console.log(account);
-    }, [isConnected, account]);
-
-    // if (!isConnected) {
-    //     return (
-    //         <Flex
-    //             className={styles.main}
-    //             height="100vh"
-    //             alignItems="center"
-    //             justifyContent="center"
-    //             direction="column"
-    //             p={4}
-    //         >
-    //             <Heading as='h1' size='4xl' noOfLines={1} mb={10}>
-    //                 <Flex>
-    //                     <img src="/unidawg.png" alt="Logo" style={{width: '200px'}}/>
-    //                 </Flex>
-    //             </Heading>
-    //             <MetaMaskConnect/>
-    //         </Flex>
-    //     );
-    // }
+        if(user) {
+            router.push('/main');
+        }
+    }, [isConnected, account, user]);
 
     return (
         <Box h="100vh" bg="darkblue">
