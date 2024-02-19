@@ -32,7 +32,7 @@ const Main: React.FC = () => {
                 <Box id="unity-container" w="600px" h="400px" my={8}>
                     <UnityWebGL/>
                 </Box>
-                <Button isDisabled={true} colorScheme="purple" size="lg">
+                <Button isDisabled={true} colorScheme="purple" size="md">
                     Rootin-Shootin-Spaceboy
                 </Button>
             </Center>

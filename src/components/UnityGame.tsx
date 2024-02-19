@@ -29,9 +29,9 @@ const UnityGame: React.FC = () => {
         const buildUrl = "/Build";
         const loaderUrl = buildUrl + "/1.loader.js";
         const config = {
-            dataUrl: buildUrl + "/1.data",
-            frameworkUrl: buildUrl + "/1.framework.js",
-            codeUrl: buildUrl + "/1.wasm",
+            dataUrl: buildUrl + "/webgl.data",
+            frameworkUrl: buildUrl + "/build.framework.js",
+            codeUrl: buildUrl + "/build.wasm",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "My project",
@@ -65,7 +65,7 @@ const UnityGame: React.FC = () => {
 
     return (
         <div id="unity-container" className="unity-desktop">
-            <canvas ref={unityCanvasRef} id="unity-canvas" width="960" height="800" tabIndex={-1}></canvas>
+            <canvas ref={unityCanvasRef} id="unity-canvas" width="960" height="600" tabIndex={-1}></canvas>
             <div id="unity-loading-bar">
                 <div id="unity-logo"></div>
                 <div id="unity-progress-bar-empty">
