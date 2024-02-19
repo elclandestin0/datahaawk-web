@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import {useRouter} from 'next/router';
 import {useGoogleAuth} from '@/contexts/GoogleAuthContext';
 import UnityWebGL from "@/components/UnityGame"; // Adjust the import path as necessary
+import {logOut} from "@/hooks/google";
 
 const Main: React.FC = () => {
     const {user} = useGoogleAuth();
@@ -15,6 +16,11 @@ const Main: React.FC = () => {
         }
     }, [user, router])
 
+    const signOut = () => {
+        logOut();
+        router.push('/');
+    }
+
     return (
         <Box h="100vh" bg="darkblue">
             <Flex justifyContent="space-between" alignItems="center" p={4}>
@@ -23,7 +29,7 @@ const Main: React.FC = () => {
                 </Text>
                 <Flex alignItems="center">
                     {user && <Image borderRadius="full" boxSize="50px" src={user.photoURL || ''}
-                                    alt={user.displayName || 'User'} mr={2}/>}
+                                    alt={user.displayName || 'User'} mr={2} onClick={signOut}/>}
                     <Text color="white">{user?.displayName}</Text>
                 </Flex>
             </Flex>

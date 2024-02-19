@@ -1,5 +1,5 @@
 // src/utils/firebase.ts
-import {initializeApp, getApp, getApps} from 'firebase/app';
+import {initializeApp} from 'firebase/app';
 import {getAnalytics} from 'firebase/analytics';
 import {getAuth, GoogleAuthProvider} from 'firebase/auth';
 
@@ -15,7 +15,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase only if it hasn't been initialized yet
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Analytics only in a client-side context
 let analytics;
