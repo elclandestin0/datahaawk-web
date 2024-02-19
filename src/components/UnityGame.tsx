@@ -1,13 +1,37 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 
-const UnityWebGL: React.FC = () => {
+const UnityGame: React.FC = () => {
+    const unityCanvasRef = useRef<HTMLCanvasElement>(null);
     useEffect(() => {
+        // Set canvas style for mobile devices
+        console.log(unityCanvasRef)
+        const adjustCanvasForMobile = () => {
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                const meta = document.createElement('meta');
+                meta.name = 'viewport';
+                meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+                document.head.appendChild(meta);
+
+                if (unityCanvasRef.current) {
+                    unityCanvasRef.current.className = "unity-mobile";
+                    unityCanvasRef.current.style.width = "100%";
+                    unityCanvasRef.current.style.height = "100%";
+                }
+            } else {
+                // Desktop style adjustments, if necessary
+                if (unityCanvasRef.current) {
+                    unityCanvasRef.current.style.width = "960px";
+                    unityCanvasRef.current.style.height = "600px";
+                }
+            }
+        };
+        console.log("about to build");
         const buildUrl = "/Build";
-        const loaderUrl = buildUrl + "/1.loader.js"; // Updated to the correct file name
+        const loaderUrl = buildUrl + "/1.loader.js";
         const config = {
-            dataUrl: buildUrl + "/1.data", // Updated to the correct file name and extension
-            frameworkUrl: buildUrl + "/1.framework.js", // Updated to the correct file name and extension
-            codeUrl: buildUrl + "/1.wasm", // Updated to the correct file name and extension
+            dataUrl: buildUrl + "/1.data",
+            frameworkUrl: buildUrl + "/1.framework.js",
+            codeUrl: buildUrl + "/1.wasm",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "My project",
@@ -18,13 +42,17 @@ const UnityWebGL: React.FC = () => {
         script.src = loaderUrl;
         script.async = true;
         script.onload = () => {
-            window.createUnityInstance(document.querySelector("#unity-canvas"), config)
-                .then((unityInstance: any) => {
-                    window.unityInstance = unityInstance;
-                })
-                .catch((message: string) => {
-                    console.error('Unity Instance creation failed:', message);
-                });
+            if (unityCanvasRef.current) {
+                console.log("creating unity instance");
+                window.createUnityInstance(unityCanvasRef.current, config)
+                    .then((unityInstance: any) => {
+                        window.unityInstance = unityInstance;
+                        adjustCanvasForMobile(); // Adjust canvas size after Unity instance is created
+                    })
+                    .catch((message: string) => {
+                        console.error('Unity Instance creation failed:', message);
+                    });
+            }
         };
         document.body.appendChild(script);
 
@@ -32,11 +60,12 @@ const UnityWebGL: React.FC = () => {
             document.body.removeChild(script);
             // Consider additional cleanup for Unity instance if necessary
         };
-    }, []);
+    }, [unityCanvasRef]);
+
 
     return (
         <div id="unity-container" className="unity-desktop">
-            <canvas id="unity-canvas" width="960" height="600" tabIndex={-1}></canvas>
+            <canvas ref={unityCanvasRef} id="unity-canvas" width="960" height="800" tabIndex={-1}></canvas>
             <div id="unity-loading-bar">
                 <div id="unity-logo"></div>
                 <div id="unity-progress-bar-empty">
@@ -53,4 +82,4 @@ const UnityWebGL: React.FC = () => {
     );
 };
 
-export default UnityWebGL;
+export default UnityGame;
