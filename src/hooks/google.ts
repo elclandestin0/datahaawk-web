@@ -1,6 +1,7 @@
 import {signInWithPopup, signOut} from 'firebase/auth';
 import {auth, provider, app} from '@/utils/firebase';
-import {doc, setDoc, getFirestore} from "firebase/firestore";
+import {doc, setDoc, getFirestore, getDoc, updateDoc} from "firebase/firestore";
+import {useMetaMask} from "@/contexts/MetaMaskContext";
 
 // Add a new document in collection "cities"
 
@@ -21,7 +22,7 @@ const signIn = async () => {
         }).catch(err => {
             console.log(err);
         });
-        
+
         console.log("set a new user in the firestore.")
 
     } catch (error) {
@@ -40,4 +41,31 @@ const logOut = async () => {
     }
 };
 
-export {signIn, logOut};
+const linkMetaMaskToGoogleAccount = async (googleUID: string) => {
+    const db = getFirestore(app);
+    const userDocRef = doc(db, 'users', googleUID);
+    const {linkToGoogle} = useMetaMask();
+
+    try {
+        const docSnap = await getDoc(userDocRef);
+
+        if (!docSnap.exists()) {
+            console.log("No such document!");
+            return;
+        }
+
+        const updatedData = await linkToGoogle();
+        if (updatedData) {
+            await updateDoc(userDocRef, {
+                walletAddress: updatedData.account,
+                signature: updatedData.signature,
+                message: updatedData.message,
+            });
+            console.log("Document updated with MetaMask account details");
+        }
+    } catch (error) {
+        console.error("Error updating document:", error);
+    }
+};
+
+export {signIn, logOut, linkMetaMaskToGoogleAccount};

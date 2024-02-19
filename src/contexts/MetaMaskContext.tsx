@@ -3,10 +3,19 @@ import {createContext, useContext, useState, useEffect, ReactNode} from 'react';
 import {doc, getFirestore, setDoc} from 'firebase/firestore';
 import {app} from '@/utils/firebase';
 
+type MetamaskAccountParams = {
+    account: string;
+    message: string;
+    signature: string;
+}
+
 interface IMetaMaskContext {
     isConnected: boolean;
     account: String | null;
     connectWallet: () => Promise<void>;
+    signIn: () => Promise<void>;
+    linkToGoogle: () => Promise<MetamaskAccountParams>;
+    disconnectMetaMask: () => void;
 }
 
 // Create a context with a default disconnected state and a dummy connect function
@@ -15,6 +24,19 @@ const MetaMaskContext = createContext<IMetaMaskContext>({
     account: null,
     connectWallet: async () => {
     },
+    signIn: async () => {
+    },
+    linkToGoogle: async (): Promise<MetamaskAccountParams> => {
+        // To fulfill the promise type, provide a dummy MetamaskAccountParams object
+        // Adjust this based on how you plan to handle this in your application
+        return {
+            account: '',
+            message: '',
+            signature: '',
+        };
+    },
+    disconnectMetaMask: () => {
+    }
 });
 
 export const useMetaMask = () => useContext(MetaMaskContext);
@@ -23,7 +45,7 @@ export const MetaMaskProvider: React.FC<{ children: ReactNode }> = ({children}) 
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [account, setAccount] = useState<string | null>(null); // State to store the connected account
     const [error, setError] = useState<string | null>(null);
-    
+
     useEffect(() => {
         const handleAccountsChanged = (accounts: string[]) => {
             if (accounts.length > 0) {
@@ -69,7 +91,7 @@ export const MetaMaskProvider: React.FC<{ children: ReactNode }> = ({children}) 
         }
     };
 
-    const signInWithMetaMask = async () => {
+    const signIn = async () => {
         const db = getFirestore(app);
         if (!window.ethereum) {
             setError('MetaMask is not installed');
@@ -101,8 +123,43 @@ export const MetaMaskProvider: React.FC<{ children: ReactNode }> = ({children}) 
         }
     };
 
+    const linkToGoogle = async (): Promise<MetamaskAccountParams> => {
+        const db = getFirestore(app);
+        if (!window.ethereum) {
+            setError('MetaMask is not installed');
+            return {account: "", signature: "", message: ""};
+        }
+
+        try {
+            // Request account access
+            const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+            const account = accounts[0];
+
+            // Sign a message with the user's wallet
+            const message = `Sign this message to prove you own the wallet and authenticate with our app. Timestamp: ${Date.now()}`;
+            const signature = await window.ethereum.request({
+                method: 'personal_sign',
+                params: [message, account],
+            });
+
+            return {account: account, message: message, signature: signature};
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
+    const disconnectMetaMask = () => {
+        // Clear the DApp state related to MetaMask
+        setIsConnected(false);
+        setAccount(null);
+        // Optionally, instruct users to manually disconnect in MetaMask
+        alert("Please disconnect this site from your MetaMask wallet.");
+    };
+
     return (
-        <MetaMaskContext.Provider value={{isConnected, account, connectWallet}}>
+        <MetaMaskContext.Provider
+            value={{isConnected, account, connectWallet, signIn, linkToGoogle, disconnectMetaMask}}>
             {children}
         </MetaMaskContext.Provider>
     );

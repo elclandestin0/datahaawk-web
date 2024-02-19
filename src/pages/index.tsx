@@ -16,12 +16,10 @@ const Home: React.FC = () => {
     const {user} = useGoogleAuth();
 
     useEffect(() => {
-        console.log(isConnected);
-        console.log(account);
-        if(user) {
+        if(user || account) {
             router.push('/main');
         }
-    }, [isConnected, account, user]);
+    }, [account, user]);
 
     return (
         <Box h="100vh" bg="darkblue">
