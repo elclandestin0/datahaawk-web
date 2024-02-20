@@ -1,4 +1,4 @@
-import {signInWithPopup, signOut} from 'firebase/auth';
+import {signInWithPopup, signOut, signInWithEmailAndPassword} from 'firebase/auth';
 import {auth, provider, app} from '@/utils/firebase';
 import {doc, setDoc, getFirestore, getDoc, updateDoc} from "firebase/firestore";
 import {useMetaMask} from "@/contexts/MetaMaskContext";
@@ -26,6 +26,42 @@ const signIn = async () => {
             console.log("User not found. Setting new user in the firestore")
         }
         console.log("User found. No need to set a doc")
+
+    } catch (error) {
+        // Handle errors here, such as displaying a notification
+        console.error(error);
+    }
+};
+
+const signInWithEmail = async (email: string, password: string) => {
+    try {
+        // Attempt to sign in with Google
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        // You can access the signed-in user via result.user
+        console.log('Signed in user:', result.user);
+
+        // Google has very cool naming for their databases. Lovely for development.
+        const db = getFirestore(app);
+        const user = result.user;
+        console.log(user);
+        const docRef = await getDoc(doc(db, "users", user.uid));
+        if (!docRef.exists()) {
+            console.log("User not found. Setting new user in the firestore")
+            await setDoc(doc(db, "users", user.uid), {
+                email: user.email,
+                displayName: user.email,
+            }).catch(err => {
+                console.log(err);
+            });
+        } else {
+            console.log("User found. Updating new user in the firestore");
+            await updateDoc(doc(db, "users", user.uid), {
+                email: user.email,
+                displayName: user.email,
+            }).catch(err => {
+                console.log(err);
+            });
+        }
 
     } catch (error) {
         // Handle errors here, such as displaying a notification
@@ -68,4 +104,4 @@ const linkMetaMaskToGoogleAccount = async (googleUID: string, account: string, s
     }
 };
 
-export {signIn, logOut, linkMetaMaskToGoogleAccount};
+export {signIn, logOut, linkMetaMaskToGoogleAccount, signInWithEmail};
