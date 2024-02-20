@@ -15,15 +15,17 @@ const signIn = async () => {
         // Google has very cool naming for their databases. Lovely for development.
         const db = getFirestore(app);
         const user = result.user;
-
-        await setDoc(doc(db, "users", user.uid), {
-            email: user.email,
-            displayName: user.displayName,
-        }).catch(err => {
-            console.log(err);
-        });
-
-        console.log("set a new user in the firestore.")
+        const docRef = await getDoc(doc(db, "users", user.uid));
+        if (!docRef) {
+            await setDoc(doc(db, "users", user.uid), {
+                email: user.email,
+                displayName: user.displayName,
+            }).catch(err => {
+                console.log(err);
+            });
+            console.log("User not found. Setting new user in the firestore")
+        }
+        console.log("User found. No need to set a doc")
 
     } catch (error) {
         // Handle errors here, such as displaying a notification
@@ -41,10 +43,9 @@ const logOut = async () => {
     }
 };
 
-const linkMetaMaskToGoogleAccount = async (googleUID: string) => {
+const linkMetaMaskToGoogleAccount = async (googleUID: string, account: string, signature: string, message: string) => {
     const db = getFirestore(app);
     const userDocRef = doc(db, 'users', googleUID);
-    const {linkToGoogle} = useMetaMask();
 
     try {
         const docSnap = await getDoc(userDocRef);
@@ -54,15 +55,14 @@ const linkMetaMaskToGoogleAccount = async (googleUID: string) => {
             return;
         }
 
-        const updatedData = await linkToGoogle();
-        if (updatedData) {
-            await updateDoc(userDocRef, {
-                walletAddress: updatedData.account,
-                signature: updatedData.signature,
-                message: updatedData.message,
-            });
-            console.log("Document updated with MetaMask account details");
-        }
+        await updateDoc(userDocRef, {
+            walletAddress: account,
+            signature: signature,
+            message: message,
+        });
+
+        console.log("Document updated with MetaMask account details");
+
     } catch (error) {
         console.error("Error updating document:", error);
     }

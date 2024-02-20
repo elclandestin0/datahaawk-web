@@ -11,6 +11,7 @@ const Main: React.FC = () => {
     const {user} = useGoogleAuth();
     const {account} = useMetaMask();
     const router = useRouter();
+    const {linkToGoogle, disconnectMetaMask} = useMetaMask();
 
     useEffect(() => {
         if (!user && !account) {
@@ -20,12 +21,14 @@ const Main: React.FC = () => {
 
     const signOut = () => {
         logOut();
+        disconnectMetaMask();
         router.push('/');
     }
 
     const handleLinkMetaMask = async () => {
         if (user?.uid) {
-            await linkMetaMaskToGoogleAccount(user.uid);
+            const data = await linkToGoogle();
+            await linkMetaMaskToGoogleAccount(user.uid, data.account, data.signature, data.message);
         }
     };
 
@@ -45,6 +48,12 @@ const Main: React.FC = () => {
                                 handleLinkMetaMask();
                             }}>
                         Link Metamask
+                    </Button>
+                    <Button colorScheme="purple" size="md"
+                            onClick={() => {
+                                signOut();
+                            }}>
+                        Logout
                     </Button>
                 </Flex>
             </Flex>
