@@ -85,7 +85,7 @@ const Main: React.FC = () => {
                     justifyContent="center" // Center horizontally
                     alignItems="center" // Center vertically
                 >
-                    <PickAxe />
+                    <PickAxe balance={balance} />
                 </Flex>
                 {/* If you have a footer or additional content, you can add it here */}
             </Flex>

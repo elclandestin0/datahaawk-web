@@ -1,5 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import {Button} from '@chakra-ui/react';
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    Button,
+    useDisclosure,
+    Text,
+    Link
+} from '@chakra-ui/react';
 import {getFirestore, doc, getDoc, collection, query, getDocs} from 'firebase/firestore';
 import {User} from 'firebase/auth'; // Ensure you import the User type for type checking
 
@@ -8,7 +19,12 @@ import {useGoogleAuth} from '@/contexts/GoogleAuthContext';
 import {useMetaMask} from "@/contexts/MetaMaskContext";
 import {useSharpshooterPass} from "@/hooks/useSharpshooterPass"; // Adjust this path to your actual auth context or hook
 
-const PickAxe: React.FC = () => {
+interface PickAxeProps {
+    balance: number;
+}
+
+const PickAxe: React.FC<PickAxeProps> = ({balance}) => {
+    const {isOpen, onOpen, onClose} = useDisclosure();
     const {account} = useMetaMask();
     const [ctaText, setCtaText] = useState<string>('');
     const [isDisabled, setIsDisabled] = useState<boolean>(true);
@@ -46,13 +62,18 @@ const PickAxe: React.FC = () => {
                     setCtaText("Arm yourself!");
                     setIsDisabled(false);
                 }
+
+                // if (balance > 0) {
+                //     setCtaText("Lock and load!");
+                //     setIsDisabled(true);
+                // }
             }
         };
 
         if (user ? user : account) {
             checkUserItemsAndWallet(user);
         }
-    }, [user, account]);
+    }, [user, account, onOpen]);
 
     const handleMint = async () => {
         const tokenId = "1"; // Specify your token ID
@@ -60,22 +81,44 @@ const PickAxe: React.FC = () => {
     };
 
     return (
-        <Button
-            colorScheme="teal" // This gives it a nice color, feel free to choose another
-            size="lg" // Make the button large
-            isDisabled={isDisabled}
-            onClick={() => {
-                if (proof) {
-                    handleMint();
-                }
-            }}
-            _hover={{
-                bg: "green.500", // Change the hover color for a little interaction effect
-                color: "white",
-            }}
-        >
-            {ctaText}
-        </Button>
+        <>
+            <Button
+                colorScheme="teal" // This gives it a nice color, feel free to choose another
+                size="lg" // Make the button large
+                isDisabled={isDisabled}
+                onClick={() => {
+                    if (proof && balance < 1) {
+                        onOpen();
+                    } else if (ctaText == "Arm yourself!") {
+                        onOpen();
+                    }
+                }}
+                _hover={{
+                    bg: "green.500", // Change the hover color for a little interaction effect
+                    color: "white",
+                }}
+            >
+                {ctaText}
+            </Button>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
+                <ModalOverlay/>
+                <ModalContent backgroundColor="gray.900" color="white">
+                    <ModalHeader>Install MetaMask</ModalHeader>
+                    <ModalBody>
+                        <Text>To interact with this feature, you need to have the MetaMask Chrome extension
+                            installed.</Text>
+                        <Text mt={4}>Please install MetaMask from the <Link href="https://metamask.io/download.html"
+                                                                            color="teal.500" isExternal>official
+                            website</Link>.</Text>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button colorScheme="blue" mr={3} onClick={onClose}>
+                            Close
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
     );
 };
 
