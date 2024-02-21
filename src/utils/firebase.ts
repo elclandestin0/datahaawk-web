@@ -3,7 +3,6 @@ import {initializeApp} from 'firebase/app';
 import {getAnalytics} from 'firebase/analytics';
 import {getAuth, GoogleAuthProvider} from 'firebase/auth';
 
-
 const firebaseConfig = {
     apiKey: "AIzaSyBUl3y-fUMObL2feVJlAxbfnyGHkssMoD8",
     authDomain: "datahawk-32021.firebaseapp.com",

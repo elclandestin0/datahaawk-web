@@ -6,18 +6,25 @@ import UnityWebGL from "@/components/UnityGame"; // Adjust the import path as ne
 import {linkMetaMaskToGoogleAccount, logOut} from "@/hooks/google";
 import {useMetaMask} from "@/contexts/MetaMaskContext";
 import PickAxe from '@/components/PickAxe'; // Import the MagicalButton component
+import ThreeJSSceneBackground from "@/components/ThreeJSSceneBackground";
+import {useUserDocument} from "@/hooks/useUserDocument";
+import {useSharpshooterPass} from "@/hooks/useSharpshooterPass";
 
 const Main: React.FC = () => {
     const {user} = useGoogleAuth();
     const {account} = useMetaMask();
+    const userId = user ? user.uid : account as string;
+    const {userDoc} = useUserDocument(userId);
     const router = useRouter();
+    const {fetchBalance, balance} = useSharpshooterPass(account ? account as string : "")
     const {linkToGoogle, disconnectMetaMask} = useMetaMask();
 
     useEffect(() => {
         if (!user && !account) {
             router.push('/');
         }
-    }, [user, account, router])
+        fetchBalance();
+    }, [user, account, router, userDoc, fetchBalance])
 
     const signOut = () => {
         logOut();
@@ -31,7 +38,7 @@ const Main: React.FC = () => {
             await linkMetaMaskToGoogleAccount(user.uid, data.account, data.signature, data.message);
         }
     };
-
+    
     return (
         <Box h="100vh" w="100vw" bg="darkblue">
             <Flex
@@ -48,35 +55,37 @@ const Main: React.FC = () => {
                     bg="purple.800" // Giving a distinct color to the navbar for visual separation
                     color="white"
                     w="full"
+                    style={{zIndex: 1}}
                 >
                     <Text fontSize="4xl">DATAHAWK</Text>
                     <Flex alignItems="center">
-                        {user && (
+                        {user?.photoUrl && (
                             <Image
                                 borderRadius="full"
                                 boxSize="40px"
                                 src={user.photoURL || ''}
-                                alt="User Photo"
                                 mr={2}
                                 onClick={signOut}
                             />
                         )}
                         <Text mr={4}>{user?.displayName || account || 'Guest'}</Text>
-                        <Button colorScheme="teal" size="sm" onClick={handleLinkMetaMask}>
-                            Link Metamask
-                        </Button>
+                        {!account || !userDoc?.walletAddress && (
+                            <Button colorScheme="teal" size="sm" onClick={handleLinkMetaMask}>
+                                Link Metamask
+                            </Button>)}
                         <Button colorScheme="red" size="sm" ml={2} onClick={signOut}>
                             Logout
                         </Button>
                     </Flex>
                 </Flex>
                 {/* Main content area */}
+                <ThreeJSSceneBackground/>
                 <Flex
                     flexGrow={1}
                     justifyContent="center" // Center horizontally
                     alignItems="center" // Center vertically
                 >
-                    <PickAxe/>
+                    <PickAxe />
                 </Flex>
                 {/* If you have a footer or additional content, you can add it here */}
             </Flex>

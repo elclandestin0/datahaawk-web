@@ -5,13 +5,16 @@ import {User} from 'firebase/auth'; // Ensure you import the User type for type 
 
 // Assuming you have a context or a hook for fetching the current user
 import {useGoogleAuth} from '@/contexts/GoogleAuthContext';
-import {useMetaMask} from "@/contexts/MetaMaskContext"; // Adjust this path to your actual auth context or hook
+import {useMetaMask} from "@/contexts/MetaMaskContext";
+import {useSharpshooterPass} from "@/hooks/useSharpshooterPass"; // Adjust this path to your actual auth context or hook
 
 const PickAxe: React.FC = () => {
     const {account} = useMetaMask();
     const [ctaText, setCtaText] = useState<string>('');
     const [isDisabled, setIsDisabled] = useState<boolean>(true);
     const {user} = useGoogleAuth(); // Adjust based on your actual authentication context or hook
+    const {mintNFT} = useSharpshooterPass(account ? account as string : "")
+    const [proof, setProof] = useState("");
 
     useEffect(() => {
         const userId = user ? user.uid : account as string;
@@ -23,10 +26,17 @@ const PickAxe: React.FC = () => {
             const itemsCollectionRef = collection(db, `users/${userId}/items`);
             const itemsQuery = query(itemsCollectionRef);
             const itemsSnapshot = await getDocs(itemsQuery);
-            console.log("here");
             if (itemsSnapshot.empty) {
                 setCtaText("Go deeper!");
             } else {
+                const firstItem = itemsSnapshot.docs[0];
+                const firstItemData = firstItem.data();
+                // Assuming 'proof' is a field on the documents in the items collection
+                const itemProof = firstItemData.proof;
+
+                if (itemProof) {
+                    setProof(itemProof); // Set the proof state
+                }
                 if (userDoc.data()?.walletAddress) {
                     // User has items and a wallet address
                     setCtaText("Unlock Sharpshooter!");
@@ -37,7 +47,6 @@ const PickAxe: React.FC = () => {
                     setIsDisabled(false);
                 }
             }
-            console.log("here 2")
         };
 
         if (user ? user : account) {
@@ -45,12 +54,20 @@ const PickAxe: React.FC = () => {
         }
     }, [user, account]);
 
+    const handleMint = async () => {
+        const tokenId = "1"; // Specify your token ID
+        await mintNFT(tokenId, proof);
+    };
+
     return (
         <Button
             colorScheme="teal" // This gives it a nice color, feel free to choose another
             size="lg" // Make the button large
             isDisabled={isDisabled}
-            onClick={() => { /* Define what happens on click */
+            onClick={() => {
+                if (proof) {
+                    handleMint();
+                }
             }}
             _hover={{
                 bg: "green.500", // Change the hover color for a little interaction effect
