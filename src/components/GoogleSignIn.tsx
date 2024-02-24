@@ -24,12 +24,14 @@ const GoogleSignIn: React.FC = () => {
                 placeholder="Email"
                 onChange={(e) => setEmail(e.target.value)}
                 size="lg"
+                color="white"
             />
             <Input
                 placeholder="Password"
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
                 size="lg"
+                color="white"
             />
             <Button colorScheme="blue" onClick={handleSignIn} size="lg">
                 Sign in with Email

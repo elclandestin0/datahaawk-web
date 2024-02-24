@@ -86,13 +86,7 @@ const PickAxe: React.FC<PickAxeProps> = ({balance}) => {
                 colorScheme="teal" // This gives it a nice color, feel free to choose another
                 size="lg" // Make the button large
                 isDisabled={isDisabled}
-                onClick={() => {
-                    if (proof && balance < 1) {
-                        onOpen();
-                    } else if (ctaText == "Arm yourself!") {
-                        onOpen();
-                    }
-                }}
+                onClick={ctaText === "Arm yourself!" ? onOpen : handleMint}
                 _hover={{
                     bg: "green.500", // Change the hover color for a little interaction effect
                     color: "white",
@@ -103,12 +97,12 @@ const PickAxe: React.FC<PickAxeProps> = ({balance}) => {
             <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
                 <ModalOverlay/>
                 <ModalContent backgroundColor="gray.900" color="white">
-                    <ModalHeader>Install MetaMask</ModalHeader>
+                    <ModalHeader>Arm yourself!</ModalHeader>
                     <ModalBody>
-                        <Text>To interact with this feature, you need to have the MetaMask Chrome extension
+                        <Text>To unlock Sharpshooter glory, you need to have the MetaMask Chrome extension
                             installed.</Text>
-                        <Text mt={4}>Please install MetaMask from the <Link href="https://metamask.io/download.html"
-                                                                            color="teal.500" isExternal>official
+                        <Text mt={4}>Get MetaMask from the <Link href="https://metamask.io/download.html"
+                                                                 color="teal.500" isExternal>official
                             website</Link>.</Text>
                     </ModalBody>
                     <ModalFooter>

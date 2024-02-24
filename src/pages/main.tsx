@@ -69,7 +69,7 @@ const Main: React.FC = () => {
                             />
                         )}
                         <Text mr={4}>{user?.displayName || account || 'Guest'}</Text>
-                        {!account || !userDoc?.walletAddress && (
+                        {!account && !userDoc?.walletAddress && (
                             <Button colorScheme="teal" size="sm" onClick={handleLinkMetaMask}>
                                 Link Metamask
                             </Button>)}
